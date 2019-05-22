@@ -4,7 +4,7 @@ const { promisify } = require("@parcel/utils");
 const fs = require("@parcel/fs");
 const path = require("path");
 
-const Resolver = require("parcel-bundler/src/utils/localRequire");
+const Resolver = require("parcel-bundler/src/Resolver");
 const localRequire = require("parcel-bundler/src/utils/localRequire");
 const parseCSSImport = require("parcel-bundler/src/utils/parseCSSImport");
 
