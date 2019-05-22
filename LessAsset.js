@@ -1,11 +1,12 @@
-const { Asset, Resolver } = require("parcel-bundler");
+const { Asset } = require("parcel-bundler");
 
 const { promisify } = require("@parcel/utils");
 const fs = require("@parcel/fs");
 const path = require("path");
 
-const localRequire = require("parcel-bundler/utils/localRequire");
-const parseCSSImport = require("parcel-bundler/utils/parseCSSImport");
+const Resolver = require("parcel-bundler/src/Resolver");
+const localRequire = require("parcel-bundler/src/utils/localRequire");
+const parseCSSImport = require("parcel-bundler/src/utils/parseCSSImport");
 
 class LESSAsset extends Asset {
   constructor(name, options) {
