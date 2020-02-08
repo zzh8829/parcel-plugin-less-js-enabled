@@ -7,11 +7,47 @@ const path = require("path");
 const Resolver = require("parcel-bundler/src/Resolver");
 const localRequire = require("parcel-bundler/src/utils/localRequire");
 const parseCSSImport = require("parcel-bundler/src/utils/parseCSSImport");
+const config = require("parcel-bundler/src/utils/config");
 
 class LESSAsset extends Asset {
   constructor(name, options) {
     super(name, options);
     this.type = "css";
+  }
+
+  // Make .lessrc and .lessrc.js work with antd
+  async getConfig(filenames, opts = {}) {
+    if (opts.packageKey) {
+      let pkg = await this.getPackage();
+      if (pkg && pkg[opts.packageKey]) {
+        return clone(pkg[opts.packageKey]);
+      }
+    }
+
+    let loadPath = opts.path || this.name;
+
+    // Fix antd less loading
+    if (this.name.includes(path.join("node_modules", "antd"))) {
+      while (path.basename(loadPath) !== "node_modules") {
+        loadPath = path.dirname(loadPath);
+      }
+    }
+
+    // Resolve the config file
+    let conf = await config.resolve(loadPath, filenames);
+
+    if (conf) {
+      // Add as a dependency so it is added to the watcher and invalidates
+      // this asset when the config changes.
+      this.addDependency(conf, { includedInParent: true });
+      if (opts.load === false) {
+        return conf;
+      }
+
+      return config.load(loadPath, filenames);
+    }
+
+    return null;
   }
 
   async parse(code) {
